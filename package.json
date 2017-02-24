@@ -7,7 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "magic-redux-generator": "^0.1.5",
+    "magic-redux-generator": "^0.1.6",
     "react": "15.4.2",
     "react-native": "0.41.2",
     "react-redux": "^5.0.2",
