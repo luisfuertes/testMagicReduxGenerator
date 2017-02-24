@@ -1,6 +1,6 @@
 // React
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
 
 //Redux
 import { connect } from 'react-redux';
@@ -11,7 +11,7 @@ import reduxGenerator from 'magic-redux-generator'
 
 class App extends Component {
 
-  componentDidMount(){
+  fetchRecords(){
     //reduxGenerator.webservices.configureToken('aaa') // Set token on login
     this.props.fetchRecords()
   }
@@ -19,7 +19,17 @@ class App extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <TouchableOpacity style={styles.button} onPress={() => this.props.fetchRecords()}>
+          <Text style={styles.text}>{'Fetch records'}</Text>
+        </TouchableOpacity>
 
+        <TouchableOpacity style={styles.button} onPress={() => this.props.fetchItem()}>
+          <Text style={styles.text}>{'Fetch item'}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={() => this.props.createItem()}>
+          <Text style={styles.text}>{'Create item'}</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -28,15 +38,43 @@ class App extends Component {
 let mapDispatchToProps = (dispatch, props) => {
   return {
 		fetchRecords: () => {
-      dispatch(actions.fetch(null, null, 'users'))
-		}
+
+      let postDispatch = (v) => {
+        if(v.users){
+          let users = v.users.map(user => user.username);
+          Alert.alert("Users:", users.toString())
+        }
+      }
+
+      dispatch(actions.fetch(null, null, null, null, null, postDispatch))
+      //or dispatch(actions.fetch(null, null, 'users', null, null, null))
+		},
+
+    fetchItem: () => {
+
+      let postDispatch = (v) => {
+        v && Alert.alert("User:", "Id: " + v.id + ", Username: " + v.username + ", Password: " + v.password)
+      }
+
+      dispatch(actions.fetchItem('/1', null, null, null, postDispatch))
+    },
+
+    createItem: () => {
+      let data = {username: 'juan', password: '12345678'}
+
+      let postDispatch = (v) => {
+        v && Alert.alert("User:", "Id: " + v.id + ", Username: " + v.username + ", Password: " + v.password)
+      }
+
+      dispatch(actions.create(data, null, null, postDispatch))
+    },
   }
 };
 
 let mapStateToProps = (state) => {
-  console.log("App state: ", state)
 	return {
     list: state.users.list,
+    item: state.users.item,
 	};
 };
 
@@ -50,14 +88,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'blue',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  button: {
+    width: 200,
+    height: 60,
+    marginBottom: 20,
+    backgroundColor: 'gray',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  text: {
+    color: 'white',
+    fontSize: 22,
   },
 });
