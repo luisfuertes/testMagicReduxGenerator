@@ -12,7 +12,7 @@ import reduxGenerator from 'magic-redux-generator'
 class App extends Component {
 
   fetchRecords(){
-    //reduxGenerator.webservices.configureToken('aaa') // Set token on login
+    //reduxGenerator.webservices.configureToken('Your token for Authorization header') // Set token on login
     this.props.fetchRecords()
   }
 
@@ -47,19 +47,27 @@ let mapDispatchToProps = (dispatch, props) => {
       }
 
       dispatch(actions.fetch(null, null, null, null, null, postDispatch))
-      //or dispatch(actions.fetch(null, null, 'users', null, null, null))
+      //dispatch(actions.fetch(null, null, 'users', null, null, null)) // If dont send postDispatch, send responseType
 		},
 
     fetchItem: () => {
 
-      let postDispatch = (v) => {
-        v && Alert.alert("User:", "Id: " + v.id + ", Username: " + v.username + ", Password: " + v.password)
+      let preDispatch = (v) => {
+        return new Promise(function (fulfill, reject) {
+          let textUser = "Id: " + v.id + ", Username: " + v.username + ", Password: " + v.password
+          fulfill(textUser)
+        })
       }
 
-      dispatch(actions.fetchItem('/1', null, null, null, postDispatch))
+      let postDispatch = (v) => {
+        v && Alert.alert("User: ", v)
+      }
+
+      dispatch(actions.fetchItem('/1', null, null, preDispatch, postDispatch))
     },
 
     createItem: () => {
+
       let data = {username: 'juan', password: '12345678'}
 
       let postDispatch = (v) => {
